@@ -2,12 +2,11 @@
 
 int atoi(char *arg);
 int main(int argc, char *argv[]){
-
+//  printf("yeee");
   if(argc !=2){
-    printf("Enter only a single arguement.\n");
+    printf("Enter only a single arguements.\n");
         return 0;
   }
-
 
   int input =atoi(argv[1]);
 
@@ -22,9 +21,10 @@ int main(int argc, char *argv[]){
 
     while(input%count==0){
       input=input/count;
+
     }
       printf("%d\n", count);
-      count=2;
+
     }
     else{
       count=count+1;

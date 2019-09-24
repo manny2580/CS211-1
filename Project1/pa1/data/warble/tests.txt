@@ -1,0 +1,18 @@
+@hello
+@world
+hElLo WoRlD
+@I
+@am
+@NASA
+@scientist
+I aM NASA sCiEnTiSt
+@How do you do, fellow kids?
+HoW dO yOu Do, FeLlOw KiDs?
+@#include <stdio.h>
+#iNcLuDe <StDiO.h>
+@blank
+@arguments
+@are
+@
+@okay
+bLaNk ArGuMeNtS aRe  OkAy
