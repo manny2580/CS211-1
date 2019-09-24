@@ -2,17 +2,17 @@
 #include <string.h>
 
 int main (int argc, char *argv[]){
+
   if(argc!=2){
-    printf("Enter a single argument.\n");
+    printf("Enter a single arguments.\n");
     return 0;
   }
 
-
   int argSize = strlen(argv[1]);
-  printf("%d\t", argSize);
-  char arg[argSize];
+  //printf("%d\t", argSize);
+  char arg[argSize+1];
   strcpy(arg,argv[1]);
-  printf("%s\n", argv[1]);
+  //printf("%s\n", argv[1]);
 
   char compress[argSize+1];
   compress [argSize]='\0';
@@ -29,9 +29,7 @@ int main (int argc, char *argv[]){
         printf("error\n");
         return 0;
       }
-
       j++;
-      //TODO: check if j is a number
     }
 
     if(compressPos+1>argSize){
@@ -44,9 +42,11 @@ int main (int argc, char *argv[]){
     int numLetters = j-i;
     compress[compressPos+1]=numLetters+'0';
     compressPos=compressPos+2;
+    /*
     printf("%s\t",compress);
     printf("%d\t",i);
     printf("%d\n",j);
+    */
     i=j;
   }
   compress[compressPos]='\0';
