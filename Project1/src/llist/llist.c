@@ -9,79 +9,108 @@ struct Node{
     struct Node *next;
 };
 
+
+struct Node *insert(struct Node *head, int input){
+    struct Node *newNode = malloc(sizeof(struct Node));
+    newNode->value = input;
+
+    //head is null
+    if(head == NULL){
+        head = newNode;
+        head->next = NULL;
+    }
+    //insert before head
+    else if(head->value > input){
+        newNode->next = head;
+        return newNode;
+    }
+    else{
+        struct Node *prev;
+        struct Node *ptr = head;
+        while(ptr != NULL){
+          
+            if(ptr->value == input){
+                return head;
+            }
+            else if(ptr->value > input){
+                newNode->next = prev->next;
+                prev->next = newNode;
+                return head;
+            }
+            prev = ptr;
+            ptr = ptr->next;
+        }
+
+        newNode-> next = NULL;
+        prev->next = newNode;
+        ptr = newNode;
+        ptr->next = NULL;
+
+    }
+    return head;
+}
+
+struct Node *delete(struct Node *head, int input){
+    struct Node *ptr = head;
+    struct Node *prev = head;
+
+    if (ptr == NULL){
+        return head;
+    }
+
+    if(ptr->value == input){
+        return head->next;
+    }
+    while(ptr != NULL){
+        if(ptr->value == input){
+            prev->next = ptr->next;
+            return head;
+        }
+        prev = ptr;
+        ptr = ptr->next;
+    }
+
+    return head;
+}
+
+void printList(struct Node *head){
+
+  int length = 0;
+  struct Node *ptr = head;
+  while(ptr!=NULL){
+    length++;
+    ptr=ptr->next;
+  }
+  printf("%d :", length);
+  ptr = head;
+  while(ptr!=NULL){
+    printf(" %d", ptr->value);
+    ptr=ptr->next;
+  }
+  printf("\n");
+}
+
+//https://github.com/meesunology/CS211-ComputerArchitecture/blob/master/second/second.c
+
 int main (int argc, char *argv[]){
 
-  struct Node **head_ptr = NULL;
-  int length = 0;
+  struct Node *head;
 
   static char buffer[1024];
   while (fgets(buffer, 1024, stdin)){
 
-        printf("%c",buffer[0]);
-        bool insert =isInsert(buffer[0]);
+        bool shouldInsert =isInsert(buffer[0]);
         buffer[0]=' ';
         int input =atoi(buffer);
-        printf("%d\n", input);
 
-        if(insert){
-          //insert
-          printf("inserting..\n");
-          struct Node *newNode = (struct Node*)malloc(sizeof(struct Node));
-          newNode->value = input;
-          newNode->next = NULL;
-
-
-          //head is null
-          if(head_ptr==NULL){
-            printf("creating head..\n");
-            (*head_ptr) = newNode;
-            //printf("%d\n", head->value);
-          }
-
-          //insert before head
-
-
-          struct Node *head = *head_ptr;
-
-          if(((struct Node *)*head_ptr)->value>input){
-            newNode->next = *head_ptr;
-            *head_ptr = newNode;
-          }
-
-          //insert in middle
-          else{
-            struct Node **ptr = head_ptr;
-            struct Node **prev = NULL;
-
-            while(((struct Node *)*ptr)->next!=NULL){
-
-              if(((struct Node *)*ptr)->value>input){
-                ((struct Node *)*prev)->next = newNode;
-                newNode->next = *ptr;
-                break;
-              }
-              prev=ptr;
-              ptr= &(((struct Node *)ptr)->next);
-            }
-
-          }
-
-          //insert at end
-
-          struct Node *ptr = head;
-
-          while(ptr->next!=NULL){
-            printf("%d\t", ptr->value);
-          }
-          printf("\n");
-
-          length++;
-
-
+        if(shouldInsert){
+          head = insert(head, input);
       }
         else{
           //delete
+          head = delete(head, input);
         }
+        printList(head);
       }
 }
 //assumes chars are only i or d
@@ -90,19 +119,4 @@ bool isInsert(char c){
     return true;
   }
   return false;
-}
-
-void push(struct Node** head_ref, int new_data)
-{
-    /* 1. allocate node */
-    struct Node* new_node = (struct Node*) malloc(sizeof(struct Node));
-
-    /* 2. put in the data  */
-    new_node->value  = new_data;
-
-    /* 3. Make next of new node as head */
-    new_node->next = (*head_ref);
-
-    /* 4. move the head to point to the new node */
-    (*head_ref)    = new_node;
 }
