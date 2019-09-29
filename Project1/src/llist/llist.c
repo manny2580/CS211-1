@@ -28,7 +28,7 @@ struct Node *insert(struct Node *head, int input){
         struct Node *prev;
         struct Node *ptr = head;
         while(ptr != NULL){
-          
+
             if(ptr->value == input){
                 return head;
             }
@@ -94,7 +94,7 @@ void printList(struct Node *head){
 
 int main (int argc, char *argv[]){
 
-  struct Node *head;
+  struct Node *head=NULL;
 
   static char buffer[1024];
   while (fgets(buffer, 1024, stdin)){
@@ -111,6 +111,16 @@ int main (int argc, char *argv[]){
           head = delete(head, input);
         }
         printList(head);
+      }
+
+      printf("yerrrrr");
+
+      struct Node *ptr = head;
+      struct Node *prev = NULL;
+      while(ptr!=NULL){
+        free(prev);
+        prev = ptr;
+        ptr = ptr->next;
       }
 }
 //assumes chars are only i or d

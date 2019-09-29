@@ -19,12 +19,12 @@ int *getCol(int size, int colNum, int **matrix){
 }
 
 int **multiply(int size,int **matrix1, int **matrix2){
-int **answer;
-answer = malloc(sizeof(int*) *size);
+  int **answer;
+  answer = malloc(sizeof(int*) *size);
 
-for(int i = 0; i < size; i++) {
-        answer[i] = malloc(sizeof(int*) *size);
-    }
+  for(int i = 0; i < size; i++) {
+          answer[i] = malloc(sizeof(int*) *size);
+      }
 
   for(int i =0;i<size;i++){
     for(int j =0;j<size;j++){
@@ -34,19 +34,21 @@ for(int i = 0; i < size; i++) {
       for(int k = 0;k<size;k++){
         num = num+(row[k]*col[k]);
       }
+      free(row);
+      free(col);
       answer[i][j] = num;
     }
   }
 
-
 return answer;
+
 }
 
 
 void printMatrix(int size,int **matrix){
   for(int i =0;i<size;i++){
     for(int j=0;j<size;j++){
-      printf(" %d", matrix[i][j]);
+      printf("%d ", matrix[i][j]);
     }
     printf("\n");
   }
@@ -88,19 +90,55 @@ int main (int argc, char * argv[]){
     int power;
     fscanf(file, "%d", &power);
 
+    /*
     printf("Input Matrix:\n");
     printMatrix(size, (inputMatrix));
     printf("\n");
+    */
+    //printf("YEEE %d\n", power);
 
     int **a;
-    a = multiply(size, inputMatrix, inputMatrix);
-    printMatrix(size, a);
+    if(power==0){
+      //return identity matrix In
+      //printf("YEEERRE");
+      for(int i =0;i<size;i++){
+        for(int j =0;j<size;j++){
+          if(i==j){
+            printf("1 ");
+          }
+          else{
+            printf("0 ");
+          }
+        }
+        printf("\n");
+      }
+      free(inputMatrix);
+      return 0;
+    }
 
+    else if(power ==1){
+      printMatrix(size,inputMatrix);
+    }
+    else{
+    for(int i =1;i<power;i++){
+      //power = 2
+      if(i==1){
+        a = multiply(size, inputMatrix, inputMatrix);
+      }
+      else{
+        a = multiply(size, a, inputMatrix);
+      }
+    }
+    //a = multiply(size, inputMatrix, inputMatrix);
+    printMatrix(size, a);
+}
 
 
     for(int i = 0; i < size; i++) {
         free(a[i]);
+        free(inputMatrix[i]);
     }
     free(a);
-
+    free(inputMatrix);
+    return 0;
 }
