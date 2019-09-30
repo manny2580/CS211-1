@@ -58,12 +58,15 @@ struct Node *delete(struct Node *head, int input){
         return head;
     }
 
-    if(ptr->value == input){
-        return head->next;
+    if(head->value == input){
+        struct Node *newHead = head->next;
+        free(head);
+        return newHead;
     }
     while(ptr != NULL){
         if(ptr->value == input){
             prev->next = ptr->next;
+            free(ptr);
             return head;
         }
         prev = ptr;
@@ -113,8 +116,6 @@ int main (int argc, char *argv[]){
         printList(head);
       }
 
-      printf("yerrrrr");
-
       struct Node *ptr = head;
       struct Node *prev = NULL;
       while(ptr!=NULL){
@@ -122,8 +123,10 @@ int main (int argc, char *argv[]){
         prev = ptr;
         ptr = ptr->next;
       }
+      free(ptr);
+      free(prev);
 }
-//assumes chars are only i or d
+//assumes chars are only i or d. this is really stupid
 bool isInsert(char c){
   if(c=='i'){
     return true;

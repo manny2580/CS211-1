@@ -45,7 +45,6 @@ struct Node *insertNode(struct Node *node, int value){
    }
 
    printBST(node->left);
-   printf("\n");
    printf("%d ", node->value);
    printBST(node->right);
 }
@@ -69,15 +68,67 @@ void searchBST(struct Node *node, int value){
 }
 
 void freeBST(struct Node *node){
+  if(node->right!=NULL){
   freeBST(node->right);
+}
+  if(node->left!=NULL){
   freeBST(node->left);
+}
   free(node);
 }
 
-struct Node *deleteNode(struct Node *node, int value){
+struct Node *getInorderSuccessor(struct Node  *node)
+{
+    struct Node* current = node;
 
+    /* loop down to find the leftmost leaf */
+    while (current && current->left != NULL)
+        current = current->left;
 
-  return node;
+    return current;
+}
+
+struct Node *deleteNode(struct Node *node, int value)
+{
+    // base case
+    if (node == NULL){
+      return node;
+    }
+    if (value < node->value){
+        node->left = deleteNode(node->left, value);
+    }
+
+    else if (value > node->value){
+        node->right = deleteNode(node->right, value);
+    }
+
+    else
+    {
+        // node with only one child or no child
+        if (node->left == NULL)
+        {
+            struct Node *temp = node->right;
+            free(node);
+            return temp;
+        }
+        else if (node->right == NULL)
+        {
+            struct Node *temp = node->left;
+            free(node);
+            return temp;
+        }
+
+        // node with two children: Get the inorder successor (smallest
+        // in the right subtree)
+        struct Node *temp = getInorderSuccessor(node->right);
+
+        // Copy the inorder successor's content to this node
+        node->value = temp->value;
+
+        // Delete the inorder successor
+        node->right = deleteNode(node->right, temp->value);
+    }
+    return node;
 }
 
 int main(int argc, char *argv[]){
@@ -102,6 +153,7 @@ int main(int argc, char *argv[]){
     //print
     else if(action =='p'){
       printBST(root);
+      printf("\n");
     }
     //delete
     else if(action =='d'){
