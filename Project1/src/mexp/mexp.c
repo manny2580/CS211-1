@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 int *getRow(int size, int rowNum, int **matrix){
   int *row = malloc(sizeof(int*)*size);
@@ -38,6 +39,18 @@ int **multiply(int size,int **matrix1, int **matrix2){
       free(col);
       answer[i][j] = num;
     }
+  }
+
+  bool same = true;
+  for(int i =0;i<size;i++){
+    for(int j =0;j<size;j++){
+      if(matrix1[i][j]!=matrix2[i][j]){
+        same = false;
+      }
+    }
+  }
+  if(!same){
+    free(matrix1);
   }
 
 return answer;
@@ -140,5 +153,8 @@ int main (int argc, char * argv[]){
     }
     free(a);
     free(inputMatrix);
+
+
+
     return 0;
 }

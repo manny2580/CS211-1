@@ -38,15 +38,22 @@ struct Node *insertNode(struct Node *node, int value){
 
 }
 
+
+
  void printBST(struct Node *node){
+if (node == NULL){
+          return;
+        }
 
-   if (node == NULL){
-     return;
-   }
+     printf("(");
+     printBST(node->left);
 
-   printBST(node->left);
-   printf("%d ", node->value);
-   printBST(node->right);
+     /* then print the data of node */
+     printf("%d", node->value);
+
+     printBST(node->right);
+     printf(")");
+
 }
 
 void searchBST(struct Node *node, int value){
@@ -88,41 +95,34 @@ struct Node *getInorderSuccessor(struct Node  *node)
     return current;
 }
 
-struct Node *deleteNode(struct Node *node, int value)
-{
-    // base case
+struct Node *deleteNode(struct Node *node, int value){
     if (node == NULL){
+      printf("absent\n");
       return node;
     }
     if (value < node->value){
         node->left = deleteNode(node->left, value);
     }
-
     else if (value > node->value){
         node->right = deleteNode(node->right, value);
     }
 
-    else
-    {
+    else{
+      printf("deleted\n");
         // node with only one child or no child
-        if (node->left == NULL)
-        {
+        if (node->left == NULL){
             struct Node *temp = node->right;
             free(node);
             return temp;
         }
-        else if (node->right == NULL)
-        {
+        else if (node->right == NULL){
             struct Node *temp = node->left;
             free(node);
             return temp;
         }
 
-        // node with two children: Get the inorder successor (smallest
-        // in the right subtree)
+        //node with two children
         struct Node *temp = getInorderSuccessor(node->right);
-
-        // Copy the inorder successor's content to this node
         node->value = temp->value;
 
         // Delete the inorder successor
