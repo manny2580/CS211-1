@@ -1,5 +1,17 @@
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
+#include <stdlib.h>
+
+char * toCharArray(int number){
+        int n = log10(number) + 1;
+        int i;
+      char *numberArray = calloc(n, sizeof(char));
+        for ( i = 0; i < n; ++i, number /= 10 ){
+            numberArray[i] = (number % 10)+'0';
+        }
+        return numberArray;
+    }
 
 int main (int argc, char *argv[]){
 
@@ -32,25 +44,39 @@ int main (int argc, char *argv[]){
       j++;
     }
 
-    if(compressPos+1>argSize){
-      //printf("Original string is shorter\n");
+    int k =j-i;
+    //char *num = (char*)&k;
+    int numDigits = floor(log10(j-i))+1;
+
+    //printf("%d\n",numDigits );
+
+    if(compressPos+1+numDigits>argSize){
       printf("%s\n",argv[1]);
       return 0;
     }
-
     compress[compressPos]=arg[i];
-    int numLetters = j-i;
-    compress[compressPos+1]=numLetters+'0';
-    compressPos=compressPos+2;
-    /*
+    compressPos++;
+    char * digitArray = toCharArray(k);
+    for(int i =0;i<numDigits;i++){
+
+      compress[compressPos]= digitArray[numDigits-i-1];
+      compressPos++;
+    }
+    free(digitArray);
+
+    //free(num);
+
+    //compressPos=compressPos+numDigits;
+/*
     printf("%s\t",compress);
     printf("%d\t",i);
-    printf("%d\n",j);
-    */
+    printf("%d\t",j);
+    printf("%d\t", numDigits);
+    printf("%d\n", compressPos);
+*/
     i=j;
   }
   compress[compressPos]='\0';
-  printf("Compressed String:\t");
   printf("%s\n",compress);
   //printf("%s\n", ;
 

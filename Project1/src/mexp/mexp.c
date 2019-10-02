@@ -21,10 +21,10 @@ int *getCol(int size, int colNum, int **matrix){
 
 int **multiply(int size,int **matrix1, int **matrix2){
   int **answer;
-  answer = malloc(sizeof(int*) *size);
+  answer = (int**)malloc(sizeof(int**) *size);
 
   for(int i = 0; i < size; i++) {
-          answer[i] = malloc(sizeof(int*) *size);
+          answer[i] = (int*)malloc(sizeof(int*) *size);
       }
 
   for(int i =0;i<size;i++){
@@ -146,15 +146,12 @@ int main (int argc, char * argv[]){
     printMatrix(size, a);
 }
 
-
     for(int i = 0; i < size; i++) {
         free(a[i]);
         free(inputMatrix[i]);
     }
     free(a);
     free(inputMatrix);
-
-
 
     return 0;
 }

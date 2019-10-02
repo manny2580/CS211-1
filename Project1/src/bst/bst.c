@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 struct Node{
     int value;
@@ -23,7 +24,7 @@ struct Node *insertNode(struct Node *node, int value){
   }
 
   if(value==node->value){
-    printf("duplicate\n");
+    printf("not inserted\n");
     return node;
   }
 
@@ -95,21 +96,23 @@ struct Node *getInorderSuccessor(struct Node  *node)
     return current;
 }
 
-struct Node *deleteNode(struct Node *node, int value){
+struct Node *deleteNode(struct Node *node, int value, bool print){
     if (node == NULL){
       printf("absent\n");
       return node;
     }
     if (value < node->value){
-        node->left = deleteNode(node->left, value);
+        node->left = deleteNode(node->left, value,print);
     }
     else if (value > node->value){
-        node->right = deleteNode(node->right, value);
+        node->right = deleteNode(node->right, value,print);
     }
 
     else{
-      printf("deleted\n");
         // node with only one child or no child
+        if(print){
+        printf("deleted\n");
+      }
         if (node->left == NULL){
             struct Node *temp = node->right;
             free(node);
@@ -126,7 +129,7 @@ struct Node *deleteNode(struct Node *node, int value){
         node->value = temp->value;
 
         // Delete the inorder successor
-        node->right = deleteNode(node->right, temp->value);
+        node->right = deleteNode(node->right, temp->value, false);
     }
     return node;
 }
@@ -157,7 +160,7 @@ int main(int argc, char *argv[]){
     }
     //delete
     else if(action =='d'){
-      root = deleteNode(root,input);
+      root = deleteNode(root,input,true);
     }
   }
   freeBST(root);
