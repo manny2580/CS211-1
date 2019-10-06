@@ -61,7 +61,12 @@ return answer;
 void printMatrix(int size,int **matrix){
   for(int i =0;i<size;i++){
     for(int j=0;j<size;j++){
+      if(j==size-1){
+        printf("%d", matrix[i][j]);
+      }
+      else{
       printf("%d ", matrix[i][j]);
+    }
     }
     printf("\n");
   }
