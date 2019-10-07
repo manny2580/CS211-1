@@ -39,18 +39,21 @@ char newCell(char *neighbors){
 char *getNextState(){
   char *newState = (char*)malloc(sizeof(char)*(numCells+1));
   newState[numCells]='\0';
-  for(int i =0;i<numCells;i++){
+  int i =0;
+  for(i =0;i<numCells;i++){
     char neighbors[4];
     neighbors[3]='\0';
     if(i==0){
-      neighbors[0]='.';
+      neighbors[0]=currentState[numCells-1];
       neighbors[1]=currentState[i];
       neighbors[2]=currentState[i+1];
+      //printf("neighbors: %s\n",neighbors);
     }
     else if(i==numCells-1){
       neighbors[0]=currentState[i-1];
       neighbors[1]=currentState[i];
-      neighbors[2]='.';
+      neighbors[2]=currentState[0];
+      //printf("neighbors: %s\n",neighbors);
     }
     else{
       neighbors[0] = currentState[i-1];
@@ -59,7 +62,7 @@ char *getNextState(){
     }
     newState[i]= newCell(neighbors);
 
-    //printf("%s\n",neighbors);
+
   }
   //printf("\n");
   free(currentState);
@@ -68,13 +71,20 @@ char *getNextState(){
 
 int main (int argc, char *argv[]){
 
-  for(int i =0;i<argc;i++){
-    printf("%s\n",argv[i]);
+  int i=0;
+  for(i =0;i<argc; i++){
+    int j = 0;
+    char *s = argv[i];
+    while(s[j]!='\0'){
+      printf("%c\t", s[j]);
+      j++;
+    }
+    printf("\n");
   }
 
   //get input
   if(argc<4){
-    printf("Incorrect arguments.\n");
+    printf("Incorrect argument.\n");
     return 0;
   }
   numCells = atoi(argv[1]);
@@ -90,8 +100,8 @@ int main (int argc, char *argv[]){
   currentState = (char*)malloc(sizeof(char)*(numCells+1));
   currentState[numCells]='\0';
 
-  printf("numCells: %d\tnumIterations: %d\n", numCells, numIterations);
-  printf("rule: %s\n",rule );
+  //printf("numCells: %d\tnumIterations: %d\n", numCells, numIterations);
+  //printf("rule: %s\n",rule );
 
   if(argc==5){
     char *initialState = argv[4];
@@ -117,12 +127,12 @@ int main (int argc, char *argv[]){
     }
     //this is iffy8
     int cellPos = floor((numCells-1)/2);
-    printf("cellPos: %d\n", cellPos);
+    //printf("cellPos: %d\n", cellPos);
     currentState[cellPos] = '*';
   }
   printf("%s\n",currentState);
-
-  for(int iter = 0;iter<numIterations;iter++){
+  int iter = 0;
+  for(iter = 0;iter<numIterations;iter++){
     currentState = getNextState(currentState, rule);
     printf("%s\n",currentState);
   }
