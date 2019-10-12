@@ -8,6 +8,8 @@ char *currentState;
 int numCells;
 
 char newCell(char *neighbors){
+
+  //printf("YEEEE");
   if(strcmp(neighbors, "...")==0){
     return rule[0];
   }
@@ -71,74 +73,75 @@ char *getNextState(){
 
 int main (int argc, char *argv[]){
 
-  int i=0;
-  for(i =0;i<argc; i++){
-    int j = 0;
-    char *s = argv[i];
-    while(s[j]!='\0'){
-      printf("%c\t", s[j]);
-      j++;
-    }
-    printf("\n");
-  }
+  char NUMCELLS[100];
+  fgets(NUMCELLS, 100,stdin);
+  numCells = atoi(NUMCELLS);
 
-  //get input
-  if(argc<4){
-    printf("Incorrect argument.\n");
-    return 0;
-  }
-  numCells = atoi(argv[1]);
-  int numIterations = atoi(argv[2]);
-  rule = argv[3];
-  //doesnt work
+  char NUMITERATIONS[100];
+  fgets(NUMITERATIONS, 100,stdin);
+  int numIterations = atoi(NUMITERATIONS);
 
-  if(strlen(rule)!=8){
-    printf("Improper rule. %d\n", (int)strlen(rule));
-    return 0;
-  }
+
+
+  rule = (char*)malloc(sizeof(char)*(9));
+  fgets(rule, 9, stdin);
+
+  getchar();
+
+  char *initialState = (char*)malloc(sizeof(char)*(numCells+1));
+  fgets(initialState, numCells+1, stdin);
+
 
   currentState = (char*)malloc(sizeof(char)*(numCells+1));
   currentState[numCells]='\0';
 
-  //printf("numCells: %d\tnumIterations: %d\n", numCells, numIterations);
-  //printf("rule: %s\n",rule );
-
-  if(argc==5){
-    char *initialState = argv[4];
-    int i =0;
-    while(initialState[i]!='\0'){
-      if(i==numCells){
-        printf("Initial state is longer than numCells.\n");
-        return 1;
+    //if there is a 4th argument
+    if(initialState[0]!='\n'&&initialState[0]!='\0'){
+      //printf("yee");
+      int i =0;
+      while(initialState[i]!='\n'&&initialState[i]!='\0'){
+        if(i==numCells){
+          printf("Initial state is longer than numCells.\n");
+          return 1;
+        }
+    //    printf("copying: %c\n",initialState[i]);
+        currentState[i]=initialState[i];
+        i++;
       }
-      currentState[i]=initialState[i];
-      i++;
-    }
-    while(i!=numCells){
-      currentState[i]='.';
-      i++;
-    }
-  }
-  else{
-    int i =0;
-    while(i!=numCells){
-      currentState[i]='.';
-      i++;
-    }
-    //this is iffy8
-    int cellPos = floor((numCells-1)/2);
-    //printf("cellPos: %d\n", cellPos);
-    currentState[cellPos] = '*';
-  }
-  printf("%s\n",currentState);
-  int iter = 0;
-  for(iter = 0;iter<numIterations;iter++){
-    currentState = getNextState(currentState, rule);
-    printf("%s\n",currentState);
-  }
-
-  free(currentState);
+      free(initialState);
+      while(i<numCells){
+        currentState[i]='.';
+        //  printf("%d %c\t",i, currentState[i]);
+           i++;
+         }
 
 
+       }
+       else{
+             free(initialState);
+         int i =0;
+         while(i!=numCells){
+           currentState[i]='.';
+           i++;
+         }
+         //this is iffy8
+         int cellPos = floor(numCells/2);
+         //printf("cellPos: %d\n", cellPos);
+         currentState[cellPos] = '*';
+       }
 
-}
+
+       printf("%s\n",currentState);
+       int iter = 0;
+
+       for(iter = 0;iter<numIterations;iter++){
+
+         currentState = getNextState();
+         printf("%s\n",currentState);
+       }
+
+       free(currentState);
+
+     //free(rule);
+
+     }
