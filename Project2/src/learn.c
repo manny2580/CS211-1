@@ -79,8 +79,7 @@ double *getCol(int size, int colNum, double **matrix){
 
 double **multiply(double **matrix1, int rows1,int columns1,
    double **matrix2, int rows2, int columns2){
-
-  double **answer = allocateMatrix(columns1, rows2);
+  double **answer = allocateMatrix(rows1 , columns2);
 
   for(int i =0;i<rows1;i++){
     //printf("\n");
@@ -95,8 +94,10 @@ double **multiply(double **matrix1, int rows1,int columns1,
     //  printf("%.1f ",num);
       free(row);
       free(col);
+      //printf("%lf ", num);
       answer[i][j] = num;
     }
+    //printf("\n");
 
   }
 return answer;
@@ -131,24 +132,24 @@ double ** invert(double **matrix, int size){
     }
   }
 
-
   for(int j =0;j<size;j++){
     double * currentRow = getRow(size, j,matrix);
     double * currentRow2 = getRow(size, j,identity);
       //make element 1
       if(matrix[j][j]==0){
         //current row = some row below w [i][a]!=0 + current row
+        printMatrix(matrix,size,size);
         int a = j+1;
-        while(matrix[a][j]!=0){
-          a++;
-          if(a==size){
-            printf("ERROR");
+        while(a<size){
+          if(matrix[a][j]!=0){
+            break;
           }
+          a++;
         }
+        printf("AAAAA: %d", a);
 
         double * otherRow2 = getRow(size, a, identity);
         otherRow2 = multiplyRowByScalar(size, otherRow2, 1/matrix[a][j]);
-
         otherRow2 = addRows(size,currentRow2, otherRow2);
         identity = setRow(size, j, identity, otherRow2);
         //matrix
@@ -158,6 +159,7 @@ double ** invert(double **matrix, int size){
         matrix = setRow(size, j, matrix, otherRow);
 
         //free(otherRow);
+
       }
       else if(matrix[j][j]==1){
         continue;
@@ -175,11 +177,13 @@ double ** invert(double **matrix, int size){
     for(int i=0;i<size;i++){
       currentRow = getRow(size, i,matrix);
       currentRow2 = getRow(size, i,identity);
+      /*
       printf("\n\n");
       printf("Looking at: %lf\n", matrix[i][j]);
       printMatrix(matrix,size,size);
       printf("\nIdentity:\n ");
       printMatrix(identity,size,size);
+      */
       //printf("%lf ", matrix[j][i]);
 
 
@@ -210,12 +214,10 @@ double ** invert(double **matrix, int size){
             */
             currentRow = addRows(size,pivotRow, currentRow);
             matrix = setRow(size, i, matrix, currentRow);
-
-
-            //free(pivotRow);
+          //free(pivotRow);
         }
       }
-      printf("\n\n");
+      //printf("\n\n");
     }
   }
   return identity;
@@ -246,19 +248,19 @@ int main (int argc, char * argv[]){
    //double ** X = readXFromFile(trainFile, numHouses, numAttributes);
    //double ** Y = readOtherMatrixFromFile(trainFile, numHouses, numAttributes);
 
-   double ** X = allocateMatrix(numHouses, numAttributes);
+   double ** X = allocateMatrix(numHouses, numAttributes+1);
    double ** Y = allocateMatrix(numHouses, 1);
 
    for(int i =0; i <numHouses;i++){
-     for(int j =0; j<numAttributes; j++){
+     for(int j =0; j<numAttributes+1; j++){
        if(j==0){
          X[i][j]=1;
        }
        else{
-        double c;
-        fscanf(trainFile, "%lf", &c);
-        X[i][j] = c;
-         if(j==numAttributes-1){
+         double c;
+         fscanf(trainFile, "%lf", &c);
+         X[i][j] = c;
+         if(j==numAttributes){
            double c;
            fscanf(trainFile, "%lf", &c);
            Y[i][0] = c;
@@ -294,28 +296,37 @@ int main (int argc, char * argv[]){
 
    //int ** Y = readMatrixFromFile(trainFile, 1,numHouses);
    printf("X:\n");
-   printMatrix(X, numHouses, numAttributes);
+   printMatrix(X, numHouses, numAttributes+1);
    printf("\nY:\n");
    printMatrix(Y, numHouses, 1);
    printf("\nXprime:\n");
    printMatrix(Xprime, numHouses2, numAttributes2+1);
 
-   double ** Xtranspose = transposeMatrix(X, numHouses, numAttributes);
-   //printf("\n\n");
+   double ** Xtranspose = transposeMatrix(X, numHouses, numAttributes+1);
    printf("\nXtranspose:\n");
-   printMatrix(Xtranspose, numAttributes, numHouses);
+   printMatrix(Xtranspose, numAttributes+1, numHouses);
 
-   double**  Xmult = multiply(X, numHouses, numAttributes,Xtranspose,numAttributes,numHouses);
-  printf("\n\nYEEE:\n\n");
-  printMatrix(Xmult, numHouses,numHouses);
+  double**  Xmult = multiply(Xtranspose,numAttributes+1,numHouses,X, numHouses, numAttributes+1);
+  printf("\n\nX transpose times X:\n");
+  printMatrix(Xmult, numAttributes+1, numAttributes+1);
 
-  double ** test = invert(Xmult, numHouses);
- printf("\n INVERT:\n");
+  double ** invertMatrix = invert(Xmult, numAttributes+1);
+  printf("\n INVERT:\n");
+  printMatrix(invertMatrix, numAttributes+1,numAttributes+1);
 
- printMatrix(test, numHouses,numHouses);
+  double**  invertMult = multiply(invertMatrix, numAttributes+1, numAttributes+1,Xtranspose,numAttributes+1,numHouses);
+  printf("\n INVERT Mult::\n");
+  printMatrix(invertMult, numAttributes+1,numHouses);
 
+  double**  W = multiply(invertMult, numAttributes+1,numHouses,Y, numHouses, 1);
+  printf("\n W:\n");
+  printMatrix(W, numAttributes+1,1);
 
- freeMatrix(test, numHouses,numHouses);
+  double**  Yprime = multiply(Xprime, numHouses2, numAttributes2+1,W, numAttributes+1,1);
+  printf("\n Y prime:\n");
+  printMatrix(Yprime,numHouses2, 1);
+
+  freeMatrix(invertMult, numAttributes+1,numAttributes+1);
   //freeMatrix(Xmult, numHouses,numHouses);
    //double **Xmul = multiply(X,numHouses,numAttributes,X,numHouses,numAttributes);
 
