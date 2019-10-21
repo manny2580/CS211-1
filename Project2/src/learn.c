@@ -31,10 +31,10 @@ void printMatrix(double **matrix, int rows, int columns){
   for(int i =0;i<rows;i++){
     for(int j=0;j<columns;j++){
       if(j==columns-1){
-        printf("%.1f", matrix[i][j]);
+        printf("%.0lf", matrix[i][j]);
       }
       else{
-      printf("%.0f", matrix[i][j]);
+      printf("%.0lf", matrix[i][j]);
     }
     }
     printf("\n");
