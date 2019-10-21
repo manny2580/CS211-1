@@ -9,17 +9,23 @@ double ** allocateMatrix(int rows, int columns){
   return matrix;
 }
 
-double ** readMatrixFromFile(FILE * file,int rows,int columns){
+double ** readXFromFile(FILE * file,int rows,int columns){
   double ** matrix = allocateMatrix(rows, columns);
   for(int i =0; i <rows;i++){
     for(int j =0; j<columns; j++){
+      if(j==0){
+        matrix[i][j]=1;
+      }
+      else{
       double c;
       fscanf(file, "%lf", &c);
       matrix[i][j] = c;
     }
+    }
   }
   return matrix;
 }
+
 
 void printMatrix(double **matrix, int rows, int columns){
   for(int i =0;i<rows;i++){
@@ -67,7 +73,7 @@ double *getCol(int size, int colNum, double **matrix){
     col[i]= matrix[i][colNum];
     //printf("%.1f ", col[i]);
   }
-  printf("\n");
+  //printf("\n");
   return col;
 }
 
@@ -77,7 +83,7 @@ double **multiply(double **matrix1, int rows1,int columns1,
   double **answer = allocateMatrix(columns1, rows2);
 
   for(int i =0;i<rows1;i++){
-    printf("\n");
+    //printf("\n");
     for(int j =0;j<columns2;j++){
       double *col = getRow(columns1, i,matrix1);
       double *row = getCol(rows2, j, matrix2);
@@ -111,7 +117,7 @@ double * addRows(int size, double *row1, double*row2){
 }
 
 double ** invert(double **matrix, int size){
-  //make augmeted matrix
+  //make identity matrix
   double ** identity = allocateMatrix(size, size);
   for(int i =0;i<size;i++){
     for(int j =0;j<size;j++){
@@ -127,65 +133,92 @@ double ** invert(double **matrix, int size){
 
 
   for(int j =0;j<size;j++){
-    for(int i=0;i<size;i++){
+    double * currentRow = getRow(size, j,matrix);
+    double * currentRow2 = getRow(size, j,identity);
+      //make element 1
+      if(matrix[j][j]==0){
+        //current row = some row below w [i][a]!=0 + current row
+        int a = j+1;
+        while(matrix[a][j]!=0){
+          a++;
+          if(a==size){
+            printf("ERROR");
+          }
+        }
+
+        double * otherRow2 = getRow(size, a, identity);
+        otherRow2 = multiplyRowByScalar(size, otherRow2, 1/matrix[a][j]);
+
+        otherRow2 = addRows(size,currentRow2, otherRow2);
+        identity = setRow(size, j, identity, otherRow2);
+        //matrix
+        double * otherRow = getRow(size, a, matrix);
+        otherRow = multiplyRowByScalar(size, otherRow, 1/matrix[a][j]);
+        otherRow = addRows(size,currentRow, otherRow);
+        matrix = setRow(size, j, matrix, otherRow);
+
+        //free(otherRow);
+      }
+      else if(matrix[j][j]==1){
+        continue;
+      }
+      else{
+        currentRow2 = multiplyRowByScalar(size, currentRow2, 1/matrix[j][j]);
+        identity = setRow(size, j, identity, currentRow2);
 
 
-      double * currentRow = getRow(size, i,matrix);
-      printMatrix(matrix,size,size);
-      printf("Looking at: %lf\n", matrix[i][j]);
-      //printf("%lf ", matrix[j][i]);
-      if(i==j){
-        //make element 1
-        if(matrix[i][j]==0){
-          //current row = some row below w [i][a]!=0 + current row
-          int a = i+1;
-          while(matrix[a][j]!=0){
-            a++;
-            if(a==size){
-              printf("ERROR");
-            }
-          }
-          double * otherRow = getRow(size, a, matrix);
-          /*
-          printf("ROW:   ");
-          for(int i =0;i<size;i++){
-            printf("%lf ", otherRow[i]);
-          }
-          */
-          otherRow = multiplyRowByScalar(size, otherRow, 1/matrix[a][j]);
-          otherRow = addRows(size,currentRow, otherRow);
-          matrix = setRow(size, i, matrix, otherRow);
-          //free(otherRow);
-        }
-        else{
-          currentRow = multiplyRowByScalar(size, currentRow, 1/matrix[i][j]);
-          matrix = setRow(size, i, matrix, currentRow);
-        }
+        currentRow = multiplyRowByScalar(size, currentRow, 1/matrix[j][j]);
+        matrix = setRow(size, j, matrix, currentRow);
       }
 
-      else{
-        //make element 0
+
+    for(int i=0;i<size;i++){
+      currentRow = getRow(size, i,matrix);
+      currentRow2 = getRow(size, i,identity);
+      printf("\n\n");
+      printf("Looking at: %lf\n", matrix[i][j]);
+      printMatrix(matrix,size,size);
+      printf("\nIdentity:\n ");
+      printMatrix(identity,size,size);
+      //printf("%lf ", matrix[j][i]);
+
+
+      //make element 0
+      if(i!=j){
         if(matrix[i][j]!=0){
+
+          double * pivotRow2 = getRow(size, j,identity);
+          pivotRow2 = multiplyRowByScalar(size, pivotRow2, -matrix[i][j]);
+          currentRow2 = addRows(size,pivotRow2, currentRow2);
+          identity = setRow(size, i, identity, currentRow2);
+
+
             //current row = current row - (pivot row * matrix[i][j])
             double * pivotRow = getRow(size, j,matrix);
+            /*
             printf("ROW:   ");
             for(int i =0;i<size;i++){
               printf("%lf ", pivotRow[i]);
             }
+            */
             pivotRow = multiplyRowByScalar(size, pivotRow, -matrix[i][j]);
+            /*
             printf("ROW:   ");
             for(int i =0;i<size;i++){
               printf("%lf ", pivotRow[i]);
             }
+            */
             currentRow = addRows(size,pivotRow, currentRow);
             matrix = setRow(size, i, matrix, currentRow);
+
+
             //free(pivotRow);
         }
       }
       printf("\n\n");
     }
   }
-  return matrix;
+  return identity;
 }
 
 void freeMatrix(double ** matrix, int rows, int columns){
@@ -210,12 +243,66 @@ int main (int argc, char * argv[]){
    int numHouses;
    fscanf(trainFile, "%*s %d %d", &numAttributes, &numHouses);
 
-   double ** X = readMatrixFromFile(trainFile, numHouses, numAttributes);
+   //double ** X = readXFromFile(trainFile, numHouses, numAttributes);
+   //double ** Y = readOtherMatrixFromFile(trainFile, numHouses, numAttributes);
+
+   double ** X = allocateMatrix(numHouses, numAttributes);
+   double ** Y = allocateMatrix(numHouses, 1);
+
+   for(int i =0; i <numHouses;i++){
+     for(int j =0; j<numAttributes; j++){
+       if(j==0){
+         X[i][j]=1;
+       }
+       else{
+        double c;
+        fscanf(trainFile, "%lf", &c);
+        X[i][j] = c;
+         if(j==numAttributes-1){
+           double c;
+           fscanf(trainFile, "%lf", &c);
+           Y[i][0] = c;
+         }
+     }
+     }
+   }
+
+   fclose(trainFile);
+   FILE * dataFile;
+   dataFile = fopen (argv[2], "r");
+
+   int numAttributes2;
+   int numHouses2;
+   fscanf(dataFile, "%*s %d %d", &numAttributes2, &numHouses2);
+   printf("numAttributes2: %d numHouses2: %d\n", numAttributes2,numHouses2);
+   double ** Xprime = allocateMatrix(numHouses2, numAttributes2+1);
+
+   for(int i =0; i <numHouses2;i++){
+     for(int j =0; j<numAttributes2+1; j++){
+       if(j==0){
+         Xprime[i][j]=1;
+       }
+       else{
+        double c;
+        fscanf(dataFile, "%lf", &c);
+        Xprime[i][j] = c;
+     }
+     }
+   }
+
+   fclose(dataFile);
+
    //int ** Y = readMatrixFromFile(trainFile, 1,numHouses);
+   printf("X:\n");
    printMatrix(X, numHouses, numAttributes);
+   printf("\nY:\n");
+   printMatrix(Y, numHouses, 1);
+   printf("\nXprime:\n");
+   printMatrix(Xprime, numHouses2, numAttributes2+1);
 
    double ** Xtranspose = transposeMatrix(X, numHouses, numAttributes);
-   printf("\n\n");
+   //printf("\n\n");
+   printf("\nXtranspose:\n");
    printMatrix(Xtranspose, numAttributes, numHouses);
 
    double**  Xmult = multiply(X, numHouses, numAttributes,Xtranspose,numAttributes,numHouses);
@@ -228,7 +315,7 @@ int main (int argc, char * argv[]){
  printMatrix(test, numHouses,numHouses);
 
 
-freeMatrix(test, numHouses,numHouses);
+ freeMatrix(test, numHouses,numHouses);
   //freeMatrix(Xmult, numHouses,numHouses);
    //double **Xmul = multiply(X,numHouses,numAttributes,X,numHouses,numAttributes);
 
@@ -240,7 +327,6 @@ freeMatrix(test, numHouses,numHouses);
    //printMatrix(Y, 1, numHouses);
    printf("numAttributes: %d\t numHouses: %d\n", numAttributes, numHouses);
    */
-   fclose(trainFile);
 
    freeMatrix(X, numHouses, numAttributes);
    freeMatrix(Xtranspose,numAttributes,numHouses);
