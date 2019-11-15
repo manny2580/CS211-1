@@ -1,0 +1,5 @@
+INPUT X Y
+OUTPUT Z W
+XOR X Y : T
+PASS T : Z
+NOT T : W

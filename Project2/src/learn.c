@@ -236,12 +236,12 @@ void freeMatrix(double ** matrix, int rows, int columns){
 }
 
 int main (int argc, char * argv[]){
-  /*
+
   if(argc<3){
-    printf("incorreectt arguments");
-    return 0;
+
+    return 1;
   }
-*/
+
 
    FILE * trainFile;
    trainFile = fopen (argv[1], "r");

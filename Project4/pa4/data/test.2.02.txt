@@ -1,0 +1,4 @@
+INPUT a b c
+OUTPUT d
+DECODER a b c : _ _ _ e f _ g h
+OR e f g h : d

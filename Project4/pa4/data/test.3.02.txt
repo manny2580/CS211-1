@@ -1,0 +1,9 @@
+INPUT IN1 IN2 IN3 IN4 IN5 IN6
+OUTPUT OUT1
+DECODER IN1 IN2 : _ _ _ temp4
+DECODER IN2 IN3 : _ _ _ temp8
+XOR temp21 temp20 : OUT1
+DECODER IN3 IN4 : _ _ _ temp12
+DECODER IN4 IN5 : _ _ _ temp16
+OR temp4 temp8 temp12 temp16 : temp21
+DECODER IN5 IN6 : _ _ _ temp20
