@@ -1,0 +1,4 @@
+INPUT A B
+OUTPUT C S
+AND A B : C
+XOR A B : S
